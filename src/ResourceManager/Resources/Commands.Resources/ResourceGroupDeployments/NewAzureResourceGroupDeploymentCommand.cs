@@ -59,11 +59,6 @@ namespace Microsoft.Azure.Commands.Resources
                 ParameterUri = TemplateParameterUri
             };
 
-            if (!string.IsNullOrEmpty(TemplateVersion) || !string.IsNullOrEmpty(StorageAccountName) || !string.IsNullOrEmpty(GalleryTemplateIdentity))
-            {
-                WriteWarning("The GalleryTemplateIdentity, TemplateVersion and StorageAccountName parameters in New-AzureRmResourceGroupDeployment cmdlet is being deprecated and will be removed in a future release.");
-            }
-
             if(this.Mode == DeploymentMode.Complete)
             {
                 this.ConfirmAction(
