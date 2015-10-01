@@ -264,16 +264,11 @@ function Test-NewResourceGroupDeploymentWithTemplateThenGetWithAndWithoutDetails
     try
     {
         # Test
-<<<<<<< HEAD
 		# Create resource group
-		New-AzureResourceGroup -Name $rgname -Location $location
-        $actual = New-AzureResourceGroupDeployment -ResourceGroupName $rgname -TemplateFile $templateFile `
+		New-AzureRmResourceGroup -Name $rgname -Location $location
+        $actual = New-AzureRmResourceGroupDeployment -ResourceGroupName $rgname -TemplateFile $templateFile `
                     -siteName $websiteName -hostingPlanName "test" -siteLocation "West US"
-=======
-        $actual = New-AzureRmResourceGroup -Name $rgname -Location $location -TemplateFile $templateFile `
-                    -siteName $websiteName -hostingPlanName "test" -siteLocation "West US" `
-                    -Tag @{ Name = "testtag"; Value = "testval" }
->>>>>>> 898f8899df371c4afc4807cbdcf47831476a4aab
+
 
         $expected1 = Get-AzureRmResourceGroup -Name $rgname
         # Assert
