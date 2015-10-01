@@ -22,27 +22,22 @@ using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Hyak.Common;
 using Microsoft.Azure.Commands.Resources.Models;
+using Microsoft.Azure.Common.Authentication;
 using Microsoft.Azure.Management.Authorization;
 using Microsoft.Azure.Management.Resources;
 using Microsoft.Azure.Management.Resources.Models;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Commands.Common.Storage;
 using Microsoft.WindowsAzure.Commands.ScenarioTest;
 using Microsoft.WindowsAzure.Commands.Test.Utilities.Common;
-using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using Xunit.Extensions;
-using System.Diagnostics;
-using Microsoft.Azure.Common.Authentication;
-using Hyak.Common;
 
 namespace Microsoft.Azure.Commands.Resources.Test.Models
 {
-    public class ResourceClientTests : TestBase
+    public class ResourceClientTests : RMTestBase
     {
         private Mock<IResourceManagementClient> resourceManagementClientMock;
 
@@ -56,13 +51,7 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
 
         private Mock<GalleryTemplatesClient> galleryTemplatesClientMock;
 
-        // TODO: http://vstfrd:8080/Azure/RD/_workitems#_a=edit&id=3247094
-        //private Mock<IEventsClient> eventsClientMock;
-
         private Mock<IDeploymentOperationOperations> deploymentOperationsMock;
-
-        // TODO: http://vstfrd:8080/Azure/RD/_workitems#_a=edit&id=3247094
-        //private Mock<IEventDataOperations> eventDataOperationsMock;
 
         private Mock<IProviderOperations> providersMock;
 
@@ -93,9 +82,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
         private Dictionary<string, object> properties;
 
         private string serializedProperties;
-
-        // TODO: http://vstfrd:8080/Azure/RD/_workitems#_a=edit&id=3247094
-        //private List<EventData> sampleEvents;
 
         private int ConfirmActionCounter = 0;
 
@@ -902,6 +888,7 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+<<<<<<< HEAD
         public void NewResourceGroupDeploymentFailsWithInvalidDeployment()
         {
             Uri templateUri = new Uri("http://templateuri.microsoft.com");
@@ -990,6 +977,8 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+=======
+>>>>>>> 898f8899df371c4afc4807cbdcf47831476a4aab
         public void TestTemplateShowsErrorMessage()
         {
             Uri templateUri = new Uri("http://templateuri.microsoft.com");
@@ -1318,9 +1307,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
             Assert.Equal(DeploymentMode.Incremental, deploymentFromGet.Properties.Mode);
             Assert.NotNull(deploymentFromGet.Properties.Template);
 
-            Assert.Equal(DeploymentMode.Incremental, deploymentFromValidate.Properties.Mode);
-            Assert.NotNull(deploymentFromValidate.Properties.Template);
-
             progressLoggerMock.Verify(
                 f => f(string.Format("Resource {0} '{1}' provisioning status is {2}",
                         "Microsoft.Website",
@@ -1427,8 +1413,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
             // Skip: Test produces different outputs since hashtable order is not guaranteed.
             //EqualsIgnoreWhitespace(File.ReadAllText(templateParameterFile), deploymentFromGet.Parameters);
 
-            Assert.Equal(DeploymentMode.Incremental, deploymentFromValidate.Properties.Mode);
-            Assert.NotNull(deploymentFromValidate.Properties.Template);
             // Skip: Test produces different outputs since hashtable order is not guaranteed.
             //EqualsIgnoreWhitespace(File.ReadAllText(templateParameterFile), deploymentFromValidate.Parameters);
 
@@ -1530,9 +1514,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
             Assert.Equal(DeploymentMode.Incremental, deploymentFromGet.Properties.Mode);
             Assert.NotNull(deploymentFromGet.Properties.Template);
 
-            Assert.Equal(DeploymentMode.Incremental, deploymentFromValidate.Properties.Mode);
-            Assert.NotNull(deploymentFromValidate.Properties.Template);
-
             errorLoggerMock.Verify(
                 f => f(string.Format("Resource {0} '{1}' failed with message '{2}'",
                         "Microsoft.Website",
@@ -1633,9 +1614,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
 
             Assert.Equal(DeploymentMode.Incremental, deploymentFromGet.Properties.Mode);
             Assert.NotNull(deploymentFromGet.Properties.Template);
-
-            Assert.Equal(DeploymentMode.Incremental, deploymentFromValidate.Properties.Mode);
-            Assert.NotNull(deploymentFromValidate.Properties.Template);
 
             errorLoggerMock.Verify(
                 f => f(string.Format("Resource {0} '{1}' failed with message '{2}'",

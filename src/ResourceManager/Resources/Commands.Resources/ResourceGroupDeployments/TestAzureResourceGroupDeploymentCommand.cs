@@ -38,8 +38,12 @@ namespace Microsoft.Azure.Commands.Resources.ResourceGroupDeployments
             this.Mode = DeploymentMode.Incremental;
         }
 
-        public override void ExecuteCmdlet()
+        protected override void ProcessRecord()
         {
+            if (!string.IsNullOrEmpty(TemplateVersion) || !string.IsNullOrEmpty(StorageAccountName) || !string.IsNullOrEmpty(GalleryTemplateIdentity))
+            {
+                WriteWarning("The GalleryTemplateIdentity, TemplateVersion and StorageAccountName parameters are being deprecated and will be removed in a future release.");
+            }
             ValidatePSResourceGroupDeploymentParameters parameters = new ValidatePSResourceGroupDeploymentParameters()
             {
                 ResourceGroupName = ResourceGroupName,
