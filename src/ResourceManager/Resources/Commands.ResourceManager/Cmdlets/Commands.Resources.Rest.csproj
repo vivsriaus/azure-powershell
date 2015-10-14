@@ -141,6 +141,10 @@
     <Compile Include="Implementation\GetAzureResourceGroupDeploymentOperationCmdlet.cs" />
     <Compile Include="Implementation\Lock\GetAzureResourceLockCmdlet.cs" />
     <Compile Include="Implementation\InvokeAzureResourceActionCmdlet.cs" />
+    <Compile Include="Implementation\ResourceGroup\GetAzureResourceGroupCmdlet.cs" />
+    <Compile Include="Implementation\ResourceGroup\NewAzureResourceGroupCmdlet.cs" />
+    <Compile Include="Implementation\ResourceGroup\RemoveAzureResourceGroupCmdlet.cs" />
+    <Compile Include="Implementation\ResourceGroup\SetAzureResourceGroupCmdlet.cs" />
     <Compile Include="Implementation\Resource\FindAzureResourceCmdlet.cs" />
     <Compile Include="Implementation\Resource\MoveAzureResourceCmdlet.cs" />
     <Compile Include="Implementation\Lock\NewAzureResourceLockCmdlet.cs" />
@@ -203,6 +207,7 @@
       <Name>Commands.Tags</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
 </Project>
