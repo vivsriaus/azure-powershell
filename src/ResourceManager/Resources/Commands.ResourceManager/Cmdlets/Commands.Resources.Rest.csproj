@@ -124,6 +124,7 @@
     <Compile Include="Entities\ResourceGroup\ResourceBatchMoveParameters.cs" />
     <Compile Include="Entities\Resources\Resource.cs" />
     <Compile Include="Entities\Resources\ResourcePlan.cs" />
+    <Compile Include="Entities\Resources\Identity.cs" />
     <Compile Include="Entities\Resources\ResourceSku.cs" />
     <Compile Include="Entities\Resources\TerminalProvisioningStates.cs" />
     <Compile Include="Extensions\AsyncExtensions.cs" />

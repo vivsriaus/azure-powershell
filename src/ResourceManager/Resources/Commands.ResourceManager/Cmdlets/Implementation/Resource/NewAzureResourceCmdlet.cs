@@ -69,6 +69,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public Hashtable Sku { get; set; }
 
         /// <summary>
+        /// Gets or sets the Identity object.
+        /// </summary>
+        [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents identity properties.")]
+        [ValidateNotNullOrEmpty]
+        public Hashtable Identity { get; set; }
+
+        /// <summary>
         /// Gets or sets the tags.
         /// </summary>
         [Alias("Tags")]
@@ -143,6 +150,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 Kind = this.Kind,
                 Plan = this.Plan.ToDictionary(addValueLayer: false).ToJson().FromJson<ResourcePlan>(),
                 Sku = this.Sku.ToDictionary(addValueLayer: false).ToJson().FromJson<ResourceSku>(),
+                Identity = this.Identity.ToDictionary(addValueLayer: false).ToJson().FromJson<Identity>(),
                 Tags = TagsHelper.GetTagsDictionary(this.Tag),
                 Properties = this.Properties.ToResourcePropertiesBody()
             };
