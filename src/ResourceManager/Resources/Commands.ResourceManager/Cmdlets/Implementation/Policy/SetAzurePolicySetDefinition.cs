@@ -27,8 +27,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     /// <summary>
     /// Sets the policy definition.
     /// </summary>
-    [Cmdlet(VerbsCommon.Set, "AzureRmPolicySetDefinition", DefaultParameterSetName = SetAzurePolicySetDefinitionCmdlet.PolicySetDefinitionNameParameterSet), OutputType(typeof(PSObject))]
-    public class SetAzurePolicySetDefinitionCmdlet : PolicyDefinitionCmdletBase
+    [Cmdlet(VerbsCommon.Set, "AzureRmPolicySetDefinition", DefaultParameterSetName = SetAzurePolicySetDefinitionCmdlet.PolicySetDefinitionNameParameterSet, SupportsShouldProcess = true), 
+        OutputType(typeof(PSObject))]
+    public class SetAzurePolicySetDefinitionCmdlet : PolicyCmdletBase
     {
         /// <summary>
         /// The policy Id parameter set.
@@ -41,17 +42,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string PolicySetDefinitionNameParameterSet = "The policy set definition name parameter set.";
 
         /// <summary>
-        /// Gets or sets the policy definition name parameter.
+        /// Gets or sets the policy set definition name parameter.
         /// </summary>
         [Parameter(ParameterSetName = SetAzurePolicySetDefinitionCmdlet.PolicySetDefinitionNameParameterSet, Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The policy set definition name.")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the policy definition id parameter
+        /// Gets or sets the policy set definition id parameter
         /// </summary>
         [Alias("ResourceId")]
-        [Parameter(ParameterSetName = SetAzurePolicySetDefinitionCmdlet.PolicySetDefinitionIdParameterSet, Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The fully qualified policy definition Id, including the subscription. e.g. /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}")]
+        [Parameter(ParameterSetName = SetAzurePolicySetDefinitionCmdlet.PolicySetDefinitionIdParameterSet, Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The fully qualified policy set definition Id, including the subscription. e.g. /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}")]
         [ValidateNotNullOrEmpty]
         public string Id { get; set; }
 
@@ -70,11 +71,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the policy definitions parameter
+        /// Gets or sets the policy definition parameter
         /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The policy set definition. This can either be a path to a file name containing the policy definitions, or the policy set definition as string.")]
+        [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true, HelpMessage = "The policy set definition. This can either be a path to a file name containing the policy definitions, or the policy set definition as string.")]
         [ValidateNotNullOrEmpty]
-        public string PolicyDefinitions { get; set; }
+        public string PolicyDefinition { get; set; }
 
         /// <summary>
         /// Executes the cmdlet.
@@ -82,29 +83,32 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         protected override void OnProcessRecord()
         {
             base.OnProcessRecord();
-            string resourceId = this.Id ?? this.GetResourceId();
-            var apiVersion = string.IsNullOrWhiteSpace(this.ApiVersion) ? Constants.PolicyApiVersion : this.ApiVersion;
+            if (this.ShouldProcess(this.Name, "Update Policy Set Definition"))
+            {
+                string resourceId = this.Id ?? this.GetResourceId();
+                var apiVersion = string.IsNullOrWhiteSpace(this.ApiVersion) ? Constants.PolicySetDefintionApiVersion : this.ApiVersion;
 
-            var operationResult = this.GetResourcesClient()
-                        .PutResource(
-                            resourceId: resourceId,
-                            apiVersion: apiVersion,
-                            resource: this.GetResource(resourceId, apiVersion),
-                            cancellationToken: this.CancellationToken.Value,
-                            odataQuery: null)
-                        .Result;
+                var operationResult = this.GetResourcesClient()
+                            .PutResource(
+                                resourceId: resourceId,
+                                apiVersion: apiVersion,
+                                resource: this.GetResource(resourceId, apiVersion),
+                                cancellationToken: this.CancellationToken.Value,
+                                odataQuery: null)
+                            .Result;
 
-            var managementUri = this.GetResourcesClient()
-              .GetResourceManagementRequestUri(
-                  resourceId: resourceId,
-                  apiVersion: apiVersion,
-                  odataQuery: null);
+                var managementUri = this.GetResourcesClient()
+                  .GetResourceManagementRequestUri(
+                      resourceId: resourceId,
+                      apiVersion: apiVersion,
+                      odataQuery: null);
 
-            var activity = string.Format("PUT {0}", managementUri.PathAndQuery);
-            var result = this.GetLongRunningOperationTracker(activityName: activity, isResourceCreateOrUpdate: true)
-                .WaitOnOperation(operationResult: operationResult);
+                var activity = string.Format("PUT {0}", managementUri.PathAndQuery);
+                var result = this.GetLongRunningOperationTracker(activityName: activity, isResourceCreateOrUpdate: true)
+                    .WaitOnOperation(operationResult: operationResult);
 
-            this.WriteObject(this.GetOutputObjects(JObject.Parse(result)), enumerateCollection: true);
+                this.WriteObject(this.GetOutputObjects("PolicySetDefinitionId", JObject.Parse(result)), enumerateCollection: true);
+            }
         }
 
         /// <summary>
@@ -127,9 +131,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         : null)
                 }
             };
-            if (!string.IsNullOrEmpty(this.PolicyDefinitions))
+            if (!string.IsNullOrEmpty(this.PolicyDefinition))
             {
-                policySetDefinitionObject.Properties.PolicyDefinitions = JArray.Parse(GetPolicyDefinitionsObject().ToString());
+                policySetDefinitionObject.Properties.PolicyDefinitions = GetPolicyDefinitionsObject();
             }
             else
             {
@@ -166,15 +170,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         }
 
         /// <summary>
-        /// Gets the policy rule object
+        /// Gets the policy definitions object
         /// </summary>
-        protected JToken GetPolicyDefinitionsObject()
+        private JArray GetPolicyDefinitionsObject()
         {
-            string policyFilePath = this.TryResolvePath(this.PolicyDefinitions);
+            string policyFilePath = this.TryResolvePath(this.PolicyDefinition);
 
             return File.Exists(policyFilePath)
-                ? JToken.FromObject(FileUtilities.DataStore.ReadFileAsText(policyFilePath))
-                : JToken.FromObject(this.PolicyDefinitions);
+                ? JArray.Parse(FileUtilities.DataStore.ReadFileAsText(policyFilePath))
+                : JArray.Parse(this.PolicyDefinition);
         }
     }
 }

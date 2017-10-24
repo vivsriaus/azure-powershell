@@ -22,10 +22,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Gets the policy definition.
+    /// Gets the policy set definition.
     /// </summary>
     [Cmdlet(VerbsCommon.Get, "AzureRmPolicySetDefinition", DefaultParameterSetName = GetAzurePolicySetDefinitionCmdlet.ParameterlessSet), OutputType(typeof(PSObject))]
-    public class GetAzurePolicySetDefinitionCmdlet : PolicySetDefinitionCmdletBase
+    public class GetAzurePolicySetDefinitionCmdlet : PolicyCmdletBase
     {
         /// <summary>
         /// The policy Id parameter set.
@@ -76,7 +76,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 getFirstPage: () => this.GetResources(),
                 getNextPage: nextLink => this.GetNextLink<JObject>(nextLink),
                 cancellationToken: this.CancellationToken,
-                action: resources => this.WriteObject(sendToPipeline: this.GetOutputObjects(resources), enumerateCollection: true));
+                action: resources => this.WriteObject(sendToPipeline: this.GetOutputObjects("PolicySetDefinitionId", resources), enumerateCollection: true));
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             string resourceId = this.Id ?? this.GetResourceId();
 
-            var apiVersion = string.IsNullOrWhiteSpace(this.ApiVersion) ? Constants.PolicyApiVersion : this.ApiVersion;
+            var apiVersion = string.IsNullOrWhiteSpace(this.ApiVersion) ? Constants.PolicySetDefintionApiVersion : this.ApiVersion;
 
             if (!string.IsNullOrEmpty(ResourceIdUtility.GetResourceName(resourceId)))
             {
